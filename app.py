@@ -19,13 +19,14 @@ st.markdown("""
         box-shadow: 0px 1px 2px rgba(0,0,0,0.05); font-weight: 600; color: #007aff; font-size: 13px;
     }
     .stTabs [aria-selected="true"] { background-color: #007aff !important; color: white !important; }
+    img { border-radius: 12px; width: 100%; height: auto; display: block; margin-bottom: 10px; }
     </style>
 """, unsafe_allow_html=True)
 
 st.title("🇯🇵 Giappone On-The-Road")
 st.write("### 🚗 Tocca le tappe per vedere foto e dettagli")
 
-# Database con link di immagini alternativi e sicuri
+# Database con formattazione Markdown nativa per le immagini
 if "database_viaggio" not in st.session_state:
     st.session_state.database_viaggio = {
         "Izu & Mt. Omuro": [
@@ -58,7 +59,7 @@ if "database_viaggio" not in st.session_state:
             {
                 "titolo": "🏮 Antica Tsumago-juku",
                 "foto": "https://picsum.photos",
-                "descrizione": "Un vero e proprio salto nel tempo nell'era Edo dei samurai. Le auto sono vietate, i fili elettrici interrati e le locande in legno tradizionali si illuminano la sia sera solo con lanterne di carta."
+                "descrizione": "Un vero e proprio salto nel tempo nell'era Edo dei samurai. Le auto sono vietate, i fili elettrici interrati e le locande in legno tradizionali si illuminano la sera solo con lanterne di carta."
             }
         ],
         "Seki Museum": [
@@ -113,21 +114,18 @@ if "database_viaggio" not in st.session_state:
         ]
     }
 
-# Creazione delle sezioni a scorrimento (Tab) in perfetto stile iOS
+# Creazione delle sezioni a scorrimento (Tab)
 tabs = st.tabs(list(st.session_state.database_viaggio.keys()))
 
 for i, (macro_zona, tappe) in enumerate(st.session_state.database_viaggio.items()):
     with tabs[i]:
         st.write(f"## 📍 {macro_zona}")
         
-        # Genera ogni singola tappa sotto forma di blocco espandibile cliccabile
         for index, tappa in enumerate(tappe):
             with st.expander(tappa["titolo"]):
-                # Mostra la foto del luogo
-                st.image(tappa["foto"], use_column_width=True)
-                # Mostra la descrizione dettagliata
+                # Forziamo il rendering dell'immagine tramite sintassi HTML nativa per eludere i blocchi di Safari
+                st.markdown(f'<img src="{tappa["foto"]}" alt="{tappa["titolo"]}">', unsafe_allow_html=True)
                 st.write(tappa["descrizione"])
-                # Checkbox per ricordarsi se la tappa è stata completata
                 st.checkbox("Segna come visitato", key=f"fatto_{macro_zona}_{index}")
 
 st.markdown("<br><p style='text-align: center; color: gray; font-size: 11px;'>Tocca i titoli per aprire i dettagli</p>", unsafe_allow_html=True)

@@ -8,107 +8,126 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# CSS personalizzato per rendere l'interfaccia identica a un'app iOS nativa
+# CSS per rendere l'interfaccia identica a un'app iOS nativa
 st.markdown("""
     <style>
     .main { background-color: #f2f2f7; }
     h1 { color: #1c1c1e; font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-weight: 700; text-align: center; }
-    .stTabs [data-baseweb="tab-list"] { gap: 8px; justify-content: center; }
+    .stTabs [data-baseweb="tab-list"] { gap: 6px; justify-content: center; }
     .stTabs [data-baseweb="tab"] {
-        background-color: #ffffff; border-radius: 12px; padding: 10px 16px;
-        box-shadow: 0px 1px 3px rgba(0,0,0,0.1); font-weight: 600; color: #007aff;
+        background-color: #ffffff; border-radius: 10px; padding: 6px 12px;
+        box-shadow: 0px 1px 2px rgba(0,0,0,0.05); font-weight: 600; color: #007aff; font-size: 13px;
     }
     .stTabs [aria-selected="true"] { background-color: #007aff !important; color: white !important; }
-    div.浪漫 card {
-        background-color: white; padding: 16px; border-radius: 16px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 12px;
-    }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🇯🇵 Il Mio Viaggio in Giappone")
-st.write("### 🚗 Itinerario Dinamico Modificabile")
+st.title("🇯🇵 Giappone On-The-Road")
+st.write("### 🚗 Tocca le tappe per vedere foto e dettagli")
 
-# Inizializzazione del database interno dell'app (se vuoto, carica il tuo itinerario)
-if "itinerario" not in st.session_state:
-    st.session_state.itinerario = {
-        "Giorno 1-2: Izu & Mt. Omuro": [
-            "Ritiro auto a Tokyo e guida panoramica sulla Izu Skyline.",
-            "Salita in seggiovia sul cratere del Monte Omuro (Ike, Ito).",
-            "Visita alle scogliere della Costa di Jogasaki.",
-            "Notte in Ryokan tradizionale con Onsen."
+# Database avanzato con Titolo, Foto e Descrizione per ogni tappa
+if "database_viaggio" not in st.session_state:
+    st.session_state.database_viaggio = {
+        "Izu & Mt. Omuro": [
+            {
+                "titolo": "🌋 Salita al Monte Omuro",
+                "foto": "https://unsplash.com",
+                "descrizione": "L'iconico vulcano spento a forma di ciotola rovesciata. Prendi la seggiovia panoramica e goditi la camminata di 20 minuti lungo il bordo del cratere con vista sul Monte Fuji e sull'oceano."
+            },
+            {
+                "titolo": "🌉 Scogliere di Jogasaki",
+                "foto": "https://unsplash.com",
+                "descrizione": "Una frastagliata costa vulcanica formata da antica lava del Monte Omuro. Attraversa il famoso ponte sospeso Kawayama, lungo 48 metri e sospeso a ben 23 metri sopra le onde impetuose."
+            }
         ],
-        "Giorno 3: Dogashima Trail": [
-            "Guida verso la costa ovest attraverso le cascate di Kawazu.",
-            "Passeggiata sul Dogashima Yuhodo Hiking Trail.",
-            "Esplorazione dall'alto della grotta marina Tensodo Cave.",
-            "Tramonto d'oro sul mare di Suruga."
+        "Dogashima Trail": [
+            {
+                "titolo": "🌊 Dogashima Yuhodo Trail & Tensodo",
+                "foto": "https://unsplash.com",
+                "descrizione": "Un breve e meraviglioso sentiero costiero. Arriverai sopra la spettacolare Grotta Tensodo, dove un foro circolare nel soffitto roccioso fa filtrare la luce creando un'acqua azzurro brillante."
+            }
         ],
-        "Giorno 4: Cape Ose & Fuji": [
-            "Guida lungo la Prefectural Road 17 con vista sul Monte Fuji.",
-            "Esplorazione di Cape Ose (Santuario e foresta di ginepri).",
-            "Osservazione del misterioso laghetto di acqua dolce Kami-ike."
+        "Cape Ose": [
+            {
+                "titolo": "⛩️ Cape Ose (Osezaki)",
+                "foto": "https://unsplash.com",
+                "descrizione": "La punta nord-occidentale di Izu. Offre una vista cartolina del Monte Fuji sopra il mare. Visita l'antico santuario dei pescatori e il laghetto misterioso di acqua dolce circondato dal mare salato."
+            }
         ],
-        "Giorno 5: Tsumago-juku (Alpi)": [
-            "Road trip verso la Valle del Kiso (Prefettura di Nagano).",
-            "Pranzo a base di Soba noodles e Gohei Mochi nel villaggio.",
-            "Passeggiata nel tempo lungo la via pedonale dell'era Edo.",
-            "Notte in una Minshuku illuminata dalle lanterne."
+        "Tsumago-juku": [
+            {
+                "titolo": "🏮 Antica Tsumago-juku",
+                "foto": "https://unsplash.com",
+                "descrizione": "Un vero e proprio salto nel tempo nell'era Edo dei samurai. Le auto sono vietate, i fili elettrici interrati e le locande in legno tradizionali si illuminano la sera solo con lanterne di carta."
+            }
         ],
-        "Giorno 6: Seki Katana Museum": [
-            "Guida verso Seki (Gifu), la capitale delle lame dei samurai.",
-            "Visita al Seki Swordsmith Museum (9-1 Minamikase).",
-            "Acquisti di coltelli artigianali alla Gifu Cutlery Hall.",
-            "Sosta fotografica al suggestivo 'Laghetto di Monet'."
+        "Seki Museum": [
+            {
+                "titolo": "⚔️ Seki Swordsmith Museum",
+                "foto": "https://unsplash.com",
+                "descrizione": "La capitale mondiale delle lame. Esplora la storia della forgia delle Katane dei samurai e fai acquisti di coltelli da cucina professionali nella adiacente Cutlery Hall."
+            }
         ],
-        "Giorno 7-8: Kyoto": [
-            "Auto parcheggiata in hotel. Spostamenti in metro e a piedi.",
-            "Giorno 7: Ginkaku-ji, Sentiero Filosofia, Kiyomizu-dera e Gion.",
-            "Giorno 8: Fushimi Inari (torii rossi), Kinkaku-ji (Tempio d'Oro), Arashiyama."
+        "Kyoto": [
+            {
+                "titolo": "⛩️ Fushimi Inari-taisha",
+                "foto": "https://unsplash.com",
+                "descrizione": "Il celeberrimo sentiero montano protetto da oltre 10.000 torii rosso scarlatto dedicati al dio del riso e dell'agricoltura. Consiglio: cammina presto al mattino per evitare la folla."
+            },
+            {
+                "titolo": "🏯 Kinkaku-ji (Il Tempio d'Oro)",
+                "foto": "https://unsplash.com",
+                "descrizione": "Uno dei monumenti più famosi al mondo: un padiglione zen interamente ricoperto di foglie d'oro splendenti che si riflette in modo simmetrico sul laghetto dello specchio d'acqua circostante."
+            }
         ],
-        "Giorno 9-10: Adachi & Motonosumi": [
-            "Giorno 9: Guida verso ovest fino all'Adachi Museum of Art (Giardini Zen).",
-            "Giorno 10: Arrivo a Motonosumi Shrine (123 Torii rossi sulla scogliera).",
-            "Lancio della monetina nella scatola delle offerte a 5 metri d'altezza."
+        "Adachi & Motonosumi": [
+            {
+                "titolo": "🖼️ Adachi Museum of Art",
+                "foto": "https://unsplash.com",
+                "descrizione": "Votato per vent'anni consecutivi come il giardino più bello del Giappone. Le ampie vetrate del museo incorniciano la natura esterna trasformandola in quadri viventi in continuo mutamento."
+            },
+            {
+                "titolo": "🦊 Motonosumi Shrine",
+                "foto": "https://unsplash.com",
+                "descrizione": "Spettacolare tunnel di 123 torii rossi che serpeggia su una scogliera nera di fronte all'oceano blu. Sfida te stesso a lanciare una moneta nella scatola delle offerte montata a 5 metri d'altezza!"
+            }
         ],
-        "Giorno 11-12: Hiroshima & Rientro": [
-            "Traghetto per l'isola sacra di Miyajima e il torii galleggiante.",
-            "Cena con Okonomiyaki e riconsegna dell'auto a Hiroshima Station.",
-            "Visita al Museo della Pace e Shinkansen super-veloce per Tokyo."
+        "Hiroshima": [
+            {
+                "titolo": "⛩️ Isola Sacra di Miyajima",
+                "foto": "https://unsplash.com",
+                "descrizione": "Prendi il traghetto per vedere il maestoso ed enorme Torii di legno che sembra fluttuare sulle acque dell'oceano durante l'alta marea. Attento ai cervi liberi che girano sull'isola!"
+            }
         ],
-        "Giorno 13-16: Tokyo Finale": [
-            "G13: Arte digitale al teamLab, isola di Odaiba e lusso a Ginza.",
-            "G14: Santuario Meiji, Harajuku, incrocio di Shibuya e Shibuya Sky.",
-            "G15: Tempio Senso-ji ad Asakusa, quartiere nerd Akihabara e mercato Ueno.",
-            "G16: Colazione street food a Tsukiji e shopping souvenir dell'ultimo minuto."
+        "Tokyo Finale": [
+            {
+                "titolo": "🔮 teamLab & Odaiba",
+                "foto": "https://unsplash.com",
+                "descrizione": "Il volto iper-tecnologico di Tokyo. Esplora le stanze d'arte digitale immersiva prima di spostarti sull'isola di Odaiba per vedere la statua del robot Gundam gigante."
+            },
+            {
+                "titolo": "🚦 Incrocio di Shibuya & Shibuya Sky",
+                "foto": "https://unsplash.com",
+                "descrizione": "Attraversa l'incrocio pedonale più pazzo e affollato del mondo, poi sali sulla spettacolare terrazza panoramica all'aperto di Shibuya Sky per ammirare le luci di Tokyo dall'alto."
+            }
         ]
     }
 
-# INTERFACCIA APP: Navigazione a Tab (stile iOS)
-tabs = st.tabs(list(st.session_state.itinerario.keys()))
+# Creazione delle sezioni a scorrimento (Tab) in perfetto stile iOS
+tabs = st.tabs(list(st.session_state.database_viaggio.keys()))
 
-for i, (giorno, tappe) in enumerate(st.session_state.itinerario.items()):
+for i, (macro_zona, tappe) in enumerate(st.session_state.database_viaggio.items()):
     with tabs[i]:
-        st.write(f"### 📍 {giorno}")
+        st.write(f"## 📍 {macro_zona}")
         
-        # Mostra le tappe attuali con checkbox per segnarle come fatte durante il viaggio
-        tappe_aggiornate = []
+        # Genera ogni singola tappa sotto forma di blocco espandibile cliccabile
         for index, tappa in enumerate(tappe):
-            fatto = st.checkbox(tappa, key=f"check_{giorno}_{index}")
-            tappe_aggiornate.append(tappa)
-            
-        st.markdown("---")
-        
-        # FUNZIONE AGGIUNTIVA: Pannello per modificare o espandere le tappe direttamente dall'iPhone
-        with st.expander("⚙️ Gestisci tappe di questa giornata"):
-            nuova_tappa = st.text_input("Aggiungi una nuova attrazione:", key=f"add_{giorno}")
-            if st.button("Inserisci", key=f"btn_add_{giorno}"):
-                if nuova_tappa:
-                    st.session_state.itinerario[giorno].append(nuova_tappa)
-                    st.rerun()
-            
-            tappa_da_rimuovere = st.selectbox("Elimina una tappa:", ["---"] + tappe, key=f"del_{giorno}")
-            if st.button("Rimuovi Selezionata", key=f"btn_del_{giorno}"):
-                if tappa_da_rimuovere != "---":
-                    st.session_state.itinerario[giorno].remove(tappa_da_rimuovere)
-                    st.rerun()
+            with st.expander(tappa["titolo"]):
+                # Mostra la foto del luogo
+                st.image(tappa["foto"], use_column_width=True)
+                # Mostra la descrizione dettagliata
+                st.write(tappa["descrizione"])
+                # Checkbox per ricordarsi se la tappa è stata completata
+                st.checkbox("Segna come visitato", key=f"fatto_{macro_zona}_{index}")
+
+st.markdown("<br><p style='text-align: center; color: gray; font-size: 11px;'>Tocca i titoli per aprire i dettagli</p>", unsafe_allow_html=True)
